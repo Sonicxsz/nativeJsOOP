@@ -4974,6 +4974,13 @@ window.addEventListener('DOMContentLoaded', function () {
   slider.render();
   var player = new _modules_playVideo__WEBPACK_IMPORTED_MODULE_1__["default"]('.showup .play', '.overlay');
   player.init();
+  var pageModuleSlider = new _modules_slider_slider_main__WEBPACK_IMPORTED_MODULE_0__["default"]({
+    container: '.moduleapp',
+    btn: '.next',
+    prev: '.prev',
+    next: '.next'
+  });
+  pageModuleSlider.render();
   var modulesSlider = new _modules_slider_slider_mini__WEBPACK_IMPORTED_MODULE_2__["default"]({
     container: '.modules__content-slider',
     next: '.modules__info-btns .slick-next',
@@ -5032,8 +5039,12 @@ function () {
 
     this.newOfficer = document.querySelector(newOfficer);
     this.oldOfficer = document.querySelector(oldOfficer);
-    this.oldItems = this.oldOfficer.querySelectorAll(items);
-    this.newItems = this.newOfficer.querySelectorAll(items);
+
+    try {
+      this.oldItems = this.oldOfficer.querySelectorAll(items);
+      this.newItems = this.newOfficer.querySelectorAll(items);
+    } catch (e) {}
+
     this.count = 0;
   }
 
@@ -5065,10 +5076,12 @@ function () {
   }, {
     key: "render",
     value: function render() {
-      this.hideTabs(this.newItems);
-      this.hideTabs(this.oldItems);
-      this.bindTriggers(this.newOfficer, this.newItems, this.count);
-      this.bindTriggers(this.oldOfficer, this.oldItems, this.count);
+      try {
+        this.hideTabs(this.newItems);
+        this.hideTabs(this.oldItems);
+        this.bindTriggers(this.newOfficer, this.newItems, this.count);
+        this.bindTriggers(this.oldOfficer, this.oldItems, this.count);
+      } catch (e) {}
     }
   }]);
 
@@ -5414,10 +5427,10 @@ var MainSlider =
 function (_Slider) {
   _inherits(MainSlider, _Slider);
 
-  function MainSlider(container, btn) {
+  function MainSlider(container, btn, next, prev) {
     _classCallCheck(this, MainSlider);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(MainSlider).call(this, container, btn));
+    return _possibleConstructorReturn(this, _getPrototypeOf(MainSlider).call(this, container, btn, next, prev));
   }
 
   _createClass(MainSlider, [{
@@ -5463,13 +5476,9 @@ function (_Slider) {
       this.showSlide(this.indexSlid += n);
     }
   }, {
-    key: "render",
-    value: function render() {
+    key: "bindTriggers",
+    value: function bindTriggers() {
       var _this2 = this;
-
-      try {
-        this.hanson = document.querySelector('.hanson');
-      } catch (error) {}
 
       this.btn.forEach(function (btn) {
         btn.addEventListener('click', function () {
@@ -5482,6 +5491,25 @@ function (_Slider) {
           _this2.showSlide(_this2.indexSlid);
         });
       });
+      this.prev.forEach(function (i) {
+        i.addEventListener('click', function (e) {
+          e.stopPropagation();
+          e.preventDefault();
+
+          _this2.plusSlid(-1);
+        });
+      });
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      if (this.container) {
+        try {
+          this.hanson = document.querySelector('.hanson');
+        } catch (e) {}
+
+        this.bindTriggers();
+      }
     }
   }]);
 
@@ -5629,16 +5657,18 @@ function (_Slider) {
     value: function init() {
       var _this3 = this;
 
-      this.container.style.cssText = "\n        display: flex;\n        flex-wrap: wrap;\n        overflow: hidden;\n        align-items: flex-start;\n       ";
+      try {
+        this.container.style.cssText = "\n        display: flex;\n        flex-wrap: wrap;\n        overflow: hidden;\n        align-items: flex-start;\n       ";
 
-      if (this.autoplay) {
-        setInterval(function () {
-          _this3.nextSlide();
-        }, 5000);
-      }
+        if (this.autoplay) {
+          setInterval(function () {
+            _this3.nextSlide();
+          }, 5000);
+        }
 
-      this.bindTriggers();
-      this.decorizeSlide();
+        this.bindTriggers();
+        this.decorizeSlide();
+      } catch (e) {}
     }
   }]);
 
@@ -5679,10 +5709,14 @@ var Slider = function Slider() {
   _classCallCheck(this, Slider);
 
   this.container = document.querySelector(container);
-  this.slides = this.container.children;
+
+  try {
+    this.slides = this.container.children;
+  } catch (e) {}
+
   this.indexSlid = 1;
-  this.prev = document.querySelector(prev);
-  this.next = document.querySelector(next);
+  this.prev = document.querySelectorAll(prev);
+  this.next = document.querySelectorAll(next);
   this.btn = document.querySelectorAll(btn);
   this.activeClass = activeClass;
   this.animate = animate;
